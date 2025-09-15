@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"math/rand"
 	"time"
 
 	"github.com/rabbitmq/amqp091-go"
@@ -59,7 +60,9 @@ func main() {
 	log.Println("Consuming from queue 'liverpool'. Waiting for messages...")
 	for d := range msgs {
 		log.Printf("Received on [liverpool]: %s", string(d.Body))
-		for i := 1; i <= 60; i++ {
+		// random in [5, 30]
+		randomDelay := 5 + rand.Intn(26)
+		for i := 1; i <= randomDelay; i++ {
 			log.Printf("Loop: %d - %s", i, string(d.Body))
 			time.Sleep(1 * time.Second)
 		}
