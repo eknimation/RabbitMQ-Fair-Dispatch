@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -8,9 +9,9 @@ import (
 )
 
 func main() {
-	msg := "Hello from publisher!"
+	baseMsg := "Hello from publisher!"
 	if len(os.Args) > 1 {
-		msg = os.Args[1]
+		baseMsg = os.Args[1]
 	}
 
 	amqpURL := "amqp://rabbituser:rabbitpassword@localhost:5672/"
@@ -38,18 +39,23 @@ func main() {
 		log.Fatalf("Failed to declare a queue: %v", err)
 	}
 
-	err = ch.Publish(
-		"",     // exchange
-		q.Name, // routing key
-		false,  // mandatory
-		false,  // immediate
-		amqp091.Publishing{
-			ContentType: "text/plain",
-			Body:        []byte(msg),
-		},
-	)
-	if err != nil {
-		log.Fatalf("Failed to publish a message: %v", err)
+	// Publish messages from 1 to 24
+	for i := 1; i <= 24; i++ {
+		msg := fmt.Sprintf("%s - Message %d", baseMsg, i)
+
+		err = ch.Publish(
+			"",     // exchange
+			q.Name, // routing key
+			false,  // mandatory
+			false,  // immediate
+			amqp091.Publishing{
+				ContentType: "text/plain",
+				Body:        []byte(msg),
+			},
+		)
+		if err != nil {
+			log.Fatalf("Failed to publish message %d: %v", i, err)
+		}
+		log.Printf("Published to [liverpool]: %s", msg)
 	}
-	log.Printf("Published to [liverpool]: %s", msg)
 }
