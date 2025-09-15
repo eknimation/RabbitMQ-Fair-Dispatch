@@ -46,7 +46,7 @@ func main() {
 	msgs, err := ch.Consume(
 		q.Name, // queue
 		"",     // consumer
-		true,   // auto-ack
+		false,  // auto-ack = false เพื่อให้ manual ack
 		false,  // exclusive
 		false,  // no-local
 		false,  // no-wait
@@ -64,5 +64,8 @@ func main() {
 			time.Sleep(1 * time.Second)
 		}
 		log.Println("Processing complete.")
+
+		// Manual acknowledgment - บอก RabbitMQ ว่าทำงานเสร็จแล้ว
+		d.Ack(false)
 	}
 }
