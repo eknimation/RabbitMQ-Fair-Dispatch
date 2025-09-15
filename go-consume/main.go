@@ -33,6 +33,16 @@ func main() {
 		log.Fatalf("Failed to declare a queue: %v", err)
 	}
 
+	// Set Fair Dispatch - only send one message at a time to each consumer
+	err = ch.Qos(
+		1,     // prefetch count - ส่งข้อความครั้งละ 1 ข้อความต่อ consumer
+		0,     // prefetch size
+		false, // global
+	)
+	if err != nil {
+		log.Fatalf("Failed to set QoS: %v", err)
+	}
+
 	msgs, err := ch.Consume(
 		q.Name, // queue
 		"",     // consumer
